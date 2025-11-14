@@ -53,21 +53,19 @@ func channelSubHandler(w http.ResponseWriter, r *http.Request, c *ConnChan, hear
 	}
 }
 
-func SseConnHandler(w http.ResponseWriter, r *http.Request, heartBeat int) {
-	id := r.PathValue("id")
+func SseConnHandler(w http.ResponseWriter, r *http.Request, resourceId string, heartBeat int) {
 	connId := uuid.New().ID()
 	ch := make(chan string, 1)
 	c := &ConnChan{
 		ConnId:  connId,
-		Id:      id,
+		Id:      resourceId,
 		Channel: ch,
 	}
 	connPool.AddChannel(c)
 	channelSubHandler(w, r, c, heartBeat)
 }
 
-func BroadcastHandler(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
+func BroadcastHandler(w http.ResponseWriter, r *http.Request, resourceId string) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Failed to read body", http.StatusBadRequest)
@@ -76,5 +74,5 @@ func BroadcastHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	bodyStr := string(body)
 
-	connPool.Broadcast(id, bodyStr)
+	connPool.Broadcast(resourceId, bodyStr)
 }

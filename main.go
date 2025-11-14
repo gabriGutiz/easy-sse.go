@@ -20,7 +20,8 @@ func main() {
 			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		ssebroadcaster.SseConnHandler(w, r, heartBeat)
+		id := r.PathValue("id")
+		ssebroadcaster.SseConnHandler(w, r, id, heartBeat)
 	})
 
 	http.HandleFunc("/channels/{id}/broadcast", func(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +29,8 @@ func main() {
 			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		ssebroadcaster.BroadcastHandler(w, r)
+		id := r.PathValue("id")
+		ssebroadcaster.BroadcastHandler(w, r, id)
 	})
 
 	log.Printf("Listening on %s\n", addr)
